@@ -32,6 +32,50 @@ If rate limit counters live in a Supabase public table, users can reset their ow
 - Use per-user usage quotas with hard limits, not just soft warnings
 - Monitor for anomalous usage patterns (sudden spikes, requests at odd hours)
 
+## CAPTCHA for Bot Prevention
+
+Rate limiting alone doesn't stop automated attacks — a botnet with 10,000 IPs each making one request per minute bypasses per-IP limits entirely. CAPTCHA adds a human verification layer.
+
+**Where CAPTCHA is appropriate:**
+- Signup / registration forms (stops account farming)
+- Password reset requests (stops enumeration attacks)
+- Contact / feedback forms (stops spam)
+- Any form that triggers expensive operations or sends email
+
+**Where CAPTCHA is NOT appropriate:**
+- Login (use rate limiting instead — CAPTCHA on login degrades UX significantly)
+- Authenticated API endpoints (users are already verified)
+
+**Implementation options:**
+- [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) — invisible, no "click the traffic lights", privacy-respecting
+- [hCaptcha](https://www.hcaptcha.com/) — GDPR-friendly alternative to reCAPTCHA
+- Google reCAPTCHA v3 — invisible score-based, note: shares data with Google
+
+Always verify the CAPTCHA token **server-side**. A client-side-only check is trivially bypassed:
+
+```typescript
+// GOOD: verify the Cloudflare Turnstile token server-side
+export async function POST(req: Request) {
+  const { token, ...formData } = await req.json();
+
+  const verifyRes = await fetch(
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: token,
+      }),
+    }
+  );
+
+  const { success } = await verifyRes.json();
+  if (!success) return new Response('CAPTCHA failed', { status: 400 });
+
+  // ... process the form
+}
+```
+
 ## Implementation Pattern
 
 ```typescript

@@ -17,6 +17,8 @@ A Claude Code skill for auditing AI-generated code for the security vulnerabilit
     ├── ai-integration.md
     ├── deployment.md
     ├── data-access.md
+    ├── error-handling-logging.md
+    ├── data-privacy.md
     ├── mcp-and-agents.md
     └── supply-chain.md
 ```
@@ -29,19 +31,23 @@ Then invoke it with `/ironsights-vibe-check` in Claude Code.
 
 Vibe-coded apps are breached in predictable ways. In January 2026, Moltbook launched after its founder said "I didn't write a single line of code." A single `curl` command exposed 1.5 million AI agent tokens, 35,000 user emails, and 4,060 private messages. CVE-2025-48757 (May 2025) documented the same class of defect across 170 Lovable-generated apps. RedHunt Labs found secrets in 1 in 5 of ~130,000 vibe-coded sites scanned in 2025.
 
-**11 audit categories:**
+**Step 0 — Repository Exposure Check** runs first. A secret in a public repo is an incident, not a finding. The skill detects whether the repo is public before starting the audit, escalates severity accordingly, and provides commands to scan git history.
+
+**13 audit categories:**
 
 1. **Secrets & Environment Variables** — hardcoded keys, client-side env prefixes, MCP config file exposure
 2. **Database Access Control** — Supabase RLS, Firebase Security Rules, Convex auth guards
-3. **Authentication & Authorization** — IDOR/BOLA, JWT algorithm confusion, middleware bypass, OAuth misconfigs
-4. **Rate Limiting & Abuse Prevention** — auth endpoints, AI API calls, tamper-proof counters
+3. **Authentication & Authorization** — MFA, RBAC, IDOR/BOLA, JWT algorithm confusion, middleware bypass, OAuth misconfigs
+4. **Rate Limiting & Abuse Prevention** — auth endpoints, AI API calls, CAPTCHA, tamper-proof counters
 5. **Payment Security** — client-side price manipulation, webhook verification, subscription status
 6. **Mobile Security** — token storage, API proxy, deep link validation
 7. **AI / LLM Integration** — API key exposure, usage caps, prompt injection, unsafe rendering
-8. **Deployment Configuration** — security headers, CORS, GraphQL introspection, source maps
+8. **Deployment & Infrastructure** — security headers, CORS, GraphQL introspection, source maps, IaC security
 9. **Data Access & Input Validation** — SQL injection, mass assignment, ReDoS, insecure deserialization, race conditions
-10. **MCP & AI Agent Security** — tool poisoning, indirect prompt injection, CVE reference, SSRF via agents
-11. **Supply Chain** — slopsquatting, malicious npm packages, dependency pinning
+10. **Error Handling & Logging** — stack trace leakage, server-side-only logging, monitoring and alerting
+11. **Data Privacy & Compliance** — PII minimisation, encryption at rest, GDPR/CCPA/Australian Privacy Principles, right to deletion
+12. **MCP & AI Agent Security** — tool poisoning, indirect prompt injection, CVE reference, SSRF via agents
+13. **Supply Chain** — slopsquatting, malicious npm packages, dependency pinning
 
 ---
 
@@ -55,19 +61,19 @@ This skill is maintained by [IronSights](https://ironsights.com.au) — Australi
 
 ## Reference Files
 
-Each reference file covers one audit category in depth, including secure/insecure code examples, real-world breach context, and framework-specific guidance.
-
 | File | Category |
 |------|----------|
 | `references/secrets-and-env.md` | API keys, env variable config, MCP config secrets |
 | `references/database-security.md` | Supabase RLS, Firebase Rules, Convex |
-| `references/authentication.md` | IDOR/BOLA, JWT, OAuth, Server Actions |
-| `references/rate-limiting.md` | Rate limiting strategies |
+| `references/authentication.md` | MFA, RBAC, IDOR/BOLA, JWT, OAuth, Server Actions |
+| `references/rate-limiting.md` | Rate limiting, CAPTCHA, abuse prevention |
 | `references/payments.md` | Stripe security, webhook verification |
 | `references/mobile.md` | React Native / Expo |
 | `references/ai-integration.md` | LLM API security, prompt injection |
-| `references/deployment.md` | Headers, CORS, GraphQL, source maps |
+| `references/deployment.md` | Headers, CORS, GraphQL, IaC security |
 | `references/data-access.md` | SQL injection, ReDoS, race conditions |
+| `references/error-handling-logging.md` | Stack trace leakage, logging, monitoring |
+| `references/data-privacy.md` | PII, encryption at rest, privacy regulations |
 | `references/mcp-and-agents.md` | MCP tool poisoning, agent security, CVEs |
 | `references/supply-chain.md` | Slopsquatting, malicious npm, pinning |
 

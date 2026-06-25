@@ -94,6 +94,71 @@ const server = new ApolloServer({
 });
 ```
 
+## Infrastructure as Code (IaC) Security
+
+If the project uses Terraform, CloudFormation, Pulumi, or CDK to provision cloud infrastructure, those files must be audited alongside the application code. Misconfigured IaC is a frequent source of publicly exposed S3 buckets, overly-permissive IAM roles, and unencrypted databases.
+
+**Common IaC misconfigurations in AI-generated code:**
+
+```hcl
+# BAD: S3 bucket publicly accessible
+resource "aws_s3_bucket_public_access_block" "example" {
+  block_public_acls   = false
+  block_public_policy = false
+}
+
+# GOOD: block all public access
+resource "aws_s3_bucket_public_access_block" "example" {
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+```
+
+```hcl
+# BAD: overly broad IAM role (AI generates AdministratorAccess for convenience)
+resource "aws_iam_role_policy_attachment" "lambda" {
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+# GOOD: least-privilege — only the specific actions the Lambda needs
+resource "aws_iam_role_policy" "lambda" {
+  policy = jsonencode({
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["s3:GetObject", "s3:PutObject"]
+      Resource = "arn:aws:s3:::my-bucket/*"
+    }]
+  })
+}
+```
+
+**Scan IaC with automated tools:**
+- [Checkov](https://www.checkov.io/) — static analysis for Terraform, CloudFormation, Kubernetes, Dockerfiles
+- [tfsec](https://aquasecurity.github.io/tfsec/) — Terraform-specific security scanner
+- [cfn-nag](https://github.com/stelligent/cfn_nag) — CloudFormation security linter
+
+```bash
+# Run Checkov against Terraform files
+checkov -d ./infra --framework terraform
+
+# Run tfsec
+tfsec ./infra
+```
+
+Add these to your CI/CD pipeline — IaC security issues should block merges, not be caught post-deployment.
+
+**Database encryption:** Verify RDS/Aurora instances have encryption at rest enabled. AI often generates these resources without it:
+
+```hcl
+# GOOD: encryption at rest enabled
+resource "aws_db_instance" "main" {
+  storage_encrypted = true
+  kms_key_id        = aws_kms_key.rds.arn
+}
+```
+
 ## Pre-Ship Checks
 
 Before deploying:

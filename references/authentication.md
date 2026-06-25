@@ -1,5 +1,92 @@
 # Authentication & Authorization
 
+## Multi-Factor Authentication (MFA)
+
+AI-generated apps almost never implement MFA. For any app handling sensitive data, payments, or admin access, MFA is a baseline control — not an optional upgrade.
+
+**Where MFA matters most:**
+- Admin and staff accounts (always)
+- Any account with elevated permissions or billing access
+- Accounts with access to PII or financial data
+
+**Implementation options in order of strength:**
+1. **Hardware key (FIDO2/WebAuthn)** — strongest, phishing-resistant, eliminates SMS interception attacks
+2. **TOTP (Google Authenticator, Authy)** — strong, works offline, vulnerable to real-time phishing
+3. **Email OTP** — acceptable for low-sensitivity apps, vulnerable to account takeover via email compromise
+4. **SMS OTP** — weakest, vulnerable to SIM-swap attacks; avoid for high-value accounts
+
+If you're using Clerk, Auth0, or Supabase Auth, MFA is a configuration flag — there's no reason not to enable it:
+
+```typescript
+// Clerk: enable MFA in the Clerk Dashboard, then enforce it for specific roles
+// Auth0: enable MFA in the Auth0 Dashboard under Security → Multi-factor Auth
+// Supabase: MFA available via supabase.auth.mfa.*
+```
+
+For admin routes, verify MFA was used in the current session — don't rely on the user having MFA enabled, verify it was actually completed:
+
+```typescript
+// Clerk: check the session's second factor
+const { sessionClaims } = auth();
+if (!sessionClaims?.metadata?.mfaVerified) {
+  redirect('/verify-mfa');
+}
+```
+
+## Role-Based Access Control (RBAC)
+
+RBAC ensures users can only access functions and data relevant to their role. AI assistants generate a single auth check ("is logged in?") and rarely model role hierarchies.
+
+**Principle of least privilege:** every user, service, and API key should have the minimum permissions needed to do their job.
+
+```typescript
+// BAD: any authenticated user can access admin endpoints
+export async function GET(req: Request) {
+  const session = await auth();
+  if (!session) return new Response('Unauthorized', { status: 401 });
+  // ... returns admin data
+}
+
+// GOOD: check role explicitly
+export async function GET(req: Request) {
+  const session = await auth();
+  if (!session) return new Response('Unauthorized', { status: 401 });
+  if (session.user.role !== 'admin') return new Response('Forbidden', { status: 403 });
+  // ... returns admin data
+}
+```
+
+**Store roles server-side, never client-side.** Roles must come from your database or identity provider — never from a cookie, localStorage value, or JWT claim that the user controls.
+
+**Common RBAC patterns:**
+- `user` / `admin` — simple two-tier, suitable for most apps
+- `user` / `moderator` / `admin` — three-tier for community platforms
+- Resource-level permissions — "user owns resource" + "admin can access all" combination
+
+**Permission checks on every mutation:** role checks aren't just for read access. Delete, update, and publish operations all need role verification:
+
+```typescript
+// Define a helper to avoid repeating role checks
+async function requireRole(session: Session | null, role: string) {
+  if (!session?.user) redirect('/login');
+  if (session.user.role !== role) throw new Error('Forbidden');
+  return session;
+}
+
+export async function deletePost(postId: string) {
+  'use server';
+  const session = await auth();
+  const post = await db.posts.findUnique({ where: { id: postId } });
+
+  // Either the post owner or an admin can delete
+  const isOwner = post?.authorId === session?.user?.id;
+  const isAdmin = session?.user?.role === 'admin';
+  if (!isOwner && !isAdmin) throw new Error('Forbidden');
+
+  await db.posts.delete({ where: { id: postId } });
+}
+```
+
 ## IDOR / Broken Object-Level Authorization (BOLA)
 
 **This is the #1 vulnerability class in AI-generated code** — 1.91× more likely than in human-written code (CSA 2025). AI assistants reliably add authentication ("is the user logged in?") but skip authorization ("does this user own this resource?"). Traditional SAST tools miss approximately 0% of authorization bugs; they require semantic understanding of ownership.
