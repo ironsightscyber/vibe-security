@@ -1,14 +1,16 @@
-# IronSights Vibe Check
+# IronSights Vibe Security
 
 A Claude Code skill for auditing AI-generated code for the security vulnerabilities that vibe-coded apps consistently ship with.
 
 **Install:**
 ```bash
-git clone https://github.com/slow-turtle-dancing/ironsights-vibe-check.git \
+git clone https://github.com/ironsightscyber/vibe-security.git \
   ~/.claude/skills/ironsights-vibe-check
 ```
 
 Then invoke with `/ironsights-vibe-check` in Claude Code.
+
+> This skill is a starting point for security review, not a substitute for a professional penetration test or security audit. CVE references and statistics reflect publicly available research at time of writing. IronSights Pty Ltd makes no warranty as to the completeness of findings.
 
 ---
 
