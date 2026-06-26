@@ -94,6 +94,7 @@ This skill catches common, predictable vulnerabilities. It does not replace a ha
 
 If you're handling customer data, taking payments, or building for an enterprise client, consider a professional review:
 
+- **[Vibe Security Check](https://ironsights.com.au/vibe-security)** — AI-specific security review for apps built with Claude Code, Cursor, Lovable, or Bolt
 - **[Cyber Security Audit](https://ironsights.com.au/cyber-security-audit)** — a structured assessment of your application and infrastructure
 - **[Managed Security](https://ironsights.com.au/managed-security)** — ongoing monitoring and incident response for your business
 - **[Contact IronSights](https://ironsights.com.au/contact)** — talk to our team about your specific situation
