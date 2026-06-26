@@ -176,4 +176,4 @@ End with a summary table of all findings.
 
 ---
 
-*Prompt maintained by [IronSights](https://ironsights.com.au) — Australian cybersecurity specialists. For a professional security review: [ironsights.com.au/vibe-security](https://ironsights.com.au/vibe-security)*
+*Prompt maintained by [IronSights](https://ironsights.com.au?utm_source=prompt&utm_medium=paste&utm_campaign=vibe-security) — Australian cybersecurity specialists. For a professional security review: [ironsights.com.au/vibe-security](https://ironsights.com.au/vibe-security?utm_source=prompt&utm_medium=paste&utm_campaign=vibe-security)*

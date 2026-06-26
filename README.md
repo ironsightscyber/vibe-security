@@ -1,8 +1,14 @@
 # IronSights Vibe Security
 
-**A free Claude Code skill that audits AI-generated code for the vulnerabilities it consistently ships with.**
+[![GitHub Stars](https://img.shields.io/github/stars/ironsightscyber/vibe-security?style=flat&color=orange)](https://github.com/ironsightscyber/vibe-security/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Maintained by IronSights](https://img.shields.io/badge/maintained%20by-IronSights-navy)](https://ironsights.com.au)
 
-Built and maintained by [IronSights](https://ironsights.com.au) — Australian cybersecurity specialists.
+**A free security audit skill for AI-generated codebases — works with Claude Code, Cursor, ChatGPT, Copilot, and any other AI tool.**
+
+Built and maintained by [IronSights](https://ironsights.com.au?utm_source=github&utm_medium=readme&utm_campaign=vibe-security) — Australian cybersecurity specialists.
+
+> **Star this repo** to get notified when new vulnerability patterns and CVEs are added.
 
 ---
 
@@ -143,10 +149,10 @@ This skill catches common, predictable vulnerabilities. It does not replace a ha
 
 If you're handling customer data, taking payments, or building for an enterprise client, consider a professional review:
 
-- **[Vibe Security Check](https://ironsights.com.au/vibe-security)** — AI-specific security review for apps built with Claude Code, Cursor, Lovable, or Bolt
-- **[Cyber Security Audit](https://ironsights.com.au/cyber-security-audit)** — a structured assessment of your application and infrastructure
-- **[Managed Security](https://ironsights.com.au/managed-security)** — ongoing monitoring and incident response for your business
-- **[Contact IronSights](https://ironsights.com.au/contact)** — talk to our team about your specific situation
+- **[Vibe Security Check](https://ironsights.com.au/vibe-security?utm_source=github&utm_medium=readme&utm_campaign=vibe-security)** — AI-specific security review for apps built with Claude Code, Cursor, Lovable, or Bolt
+- **[Cyber Security Audit](https://ironsights.com.au/cyber-security-audit?utm_source=github&utm_medium=readme&utm_campaign=vibe-security)** — a structured assessment of your application and infrastructure
+- **[Managed Security](https://ironsights.com.au/managed-security?utm_source=github&utm_medium=readme&utm_campaign=vibe-security)** — ongoing monitoring and incident response for your business
+- **[Contact IronSights](https://ironsights.com.au/contact?utm_source=github&utm_medium=readme&utm_campaign=vibe-security)** — talk to our team about your specific situation
 
 ---
 
