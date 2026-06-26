@@ -1,83 +1,109 @@
 # IronSights Vibe Security
 
-A Claude Code skill for auditing AI-generated code for the security vulnerabilities that vibe-coded apps consistently ship with.
+**A free Claude Code skill that audits AI-generated code for the vulnerabilities it consistently ships with.**
 
-**Install:**
+Built and maintained by [IronSights](https://ironsights.com.au) — Australian cybersecurity specialists.
+
+---
+
+## Why this exists
+
+AI coding tools like Claude Code, Cursor, Lovable, and Bolt write code fast. They also introduce the same security mistakes, over and over. This skill gives Claude Code a structured security checklist — the same categories our consultants review in professional audits — so you can catch the obvious problems before they ship.
+
+**The numbers:**
+- **87%** of AI-generated PRs contain at least one vulnerability
+- **62%** of AI code ships with vulnerabilities (OX Security / CSA, 4M scans)
+- **100%** of tested AI-generated apps had SSRF — **0%** had security headers (OX Security, 15 apps)
+- **2.74×** more XSS, **1.91×** more IDOR, **2.14×** more secrets exposure vs human-written code
+- **37%** more critical vulnerabilities after 5 rounds of AI refinement — more prompting makes it worse
+
+Real breaches: Moltbook (Jan 2026, 1.5M tokens exposed via a single `curl`), CVE-2025-48757 (170 Lovable apps, all data publicly readable), EnrichLead (zero authentication on launch day), RedHunt Labs Wave 15 (secrets found in 1 in 5 of ~130,000 vibe-coded sites).
+
+---
+
+## Installation
+
+### Prerequisites
+
+Before installing, you need:
+- **Claude Code** — Anthropic's AI coding assistant ([claude.ai/code](https://claude.ai/code))
+- **Git** — version control tool ([git-scm.com](https://git-scm.com/downloads))
+
+### Install (Mac / Linux)
+
+Open a terminal and run:
+
 ```bash
 git clone https://github.com/ironsightscyber/vibe-security.git \
   ~/.claude/skills/ironsights-vibe-check
 ```
 
-Then invoke with `/ironsights-vibe-check` in Claude Code.
+### Install (Windows)
 
-> This skill is a starting point for security review, not a substitute for a professional penetration test or security audit. CVE references and statistics reflect publicly available research at time of writing. IronSights Pty Ltd makes no warranty as to the completeness of findings.
+Open Command Prompt or PowerShell and run:
+
+```powershell
+git clone https://github.com/ironsightscyber/vibe-security.git `
+  "$env:USERPROFILE\.claude\skills\ironsights-vibe-check"
+```
+
+### Use it
+
+Open any project in Claude Code and type:
+
+```
+/ironsights-vibe-check
+```
+
+Claude will run through 18 security categories and report findings by severity — Critical, High, Medium, Low — with code fixes for each.
 
 ---
 
-## The Numbers
+## What it checks
 
-- **87%** of AI-generated PRs contain at least one vulnerability
-- **62%** of AI code ships with vulnerabilities (OX Security / CSA, 4M scans)
-- **100%** of tested AI-generated apps had SSRF — **0%** had security headers (OX Security, 15 apps)
-- **2.74×** more XSS, **1.91×** more IDOR, **2.14×** more secrets exposure vs human-written code
-- **37%** more critical vulnerabilities after 5 iterative refinement rounds — more prompting = worse security
+**Step 0 — Repository Exposure** runs first. A secret in a public repo is already compromised.
 
-Real breaches: Moltbook (Jan 2026, 1.5M tokens), CVE-2025-48757 (170 Lovable apps), EnrichLead (zero auth on launch day), RedHunt Labs Wave 15 (secrets in 1 in 5 of ~130,000 sites).
+**18 audit categories:**
 
----
-
-## What It Checks
-
-**Step 0 — Repository Exposure Check** runs first. A secret in a public repo is an incident, not a finding.
-
-**18 audit categories with severity tags (`[QUICK]` / `[MEDIUM]` / `[ARCH]`):**
-
-| # | Category | Key patterns |
-|---|----------|-------------|
-| 1 | Secrets & Environment Variables | Hardcoded keys, NEXT_PUBLIC_ prefixes, MCP config files |
-| 2 | Database Access Control | Supabase RLS, Firebase Rules, Convex |
-| 3 | Authentication & Authorization | MFA, RBAC, IDOR/BOLA, JWT algorithm confusion, OAuth |
-| 4 | Multitenancy & Tenant Isolation | Cross-tenant data leakage, scoped queries, background jobs |
-| 5 | Rate Limiting & Abuse Prevention | Auth endpoints, AI API calls, CAPTCHA, wiring gap |
-| 6 | Payment Security | Client-side price manipulation, webhook verification |
-| 7 | Mobile Security | Token storage, API proxy, deep links |
-| 8 | AI / LLM Integration | API key exposure, prompt injection, semantic cache poisoning |
-| 9 | Deployment & Infrastructure | Security headers, CORS, GraphQL, Next.js CVEs, IaC |
-| 10 | SSRF | Server-side request forgery, webhook SSRF, image optimizer |
-| 11 | File Upload Security | Path traversal, SVG XSS, MIME bypass, polyglots |
-| 12 | XSS, Injection & DOM Attacks | dangerouslySetInnerHTML, javascript: URIs, prototype pollution |
-| 13 | Cryptographic Failures | bcrypt vs SHA-256, AES-GCM, nonce reuse, timing attacks |
-| 14 | Data Access & Input Validation | SQLi, Prisma operator injection, ReDoS, race conditions |
-| 15 | Error Handling & Logging | Stack trace leakage, structured logging, monitoring |
+| # | Category | What it catches |
+|---|----------|----------------|
+| 1 | Secrets & Environment Variables | Hardcoded API keys, exposed `.env` files, MCP config leaks |
+| 2 | Database Access Control | Supabase RLS disabled, Firebase open rules, Convex auth gaps |
+| 3 | Authentication & Authorization | IDOR/BOLA, MFA gaps, JWT algorithm confusion, OAuth misconfiguration |
+| 4 | Multitenancy & Tenant Isolation | Cross-tenant data leakage, unscoped queries |
+| 5 | Rate Limiting & Abuse Prevention | Unprotected auth endpoints, missing CAPTCHA, AI API abuse |
+| 6 | Payment Security | Client-side price manipulation, unsigned webhooks |
+| 7 | Mobile Security | Insecure token storage, exposed API keys in bundles |
+| 8 | AI / LLM Integration | API key exposure, prompt injection, cache poisoning |
+| 9 | Deployment & Infrastructure | Missing security headers, wildcard CORS, outdated Next.js CVEs |
+| 10 | SSRF | Server-side request forgery via webhooks, image optimizer, link previews |
+| 11 | File Upload Security | Path traversal, SVG XSS, MIME spoofing, missing size limits |
+| 12 | XSS, Injection & DOM Attacks | Unsanitised HTML, `javascript:` URIs, prototype pollution |
+| 13 | Cryptographic Failures | SHA-256 used for passwords, AES-CBC, nonce reuse |
+| 14 | Data Access & Input Validation | SQL injection, Prisma operator injection, ReDoS |
+| 15 | Error Handling & Logging | Stack traces in API responses, secrets in logs |
 | 16 | Data Privacy & Compliance | GDPR, CCPA, Australian Privacy Principles |
-| 17 | MCP & AI Agent Security | Tool poisoning, indirect prompt injection, 8+ CVEs |
-| 18 | Supply Chain | Slopsquatting, malicious npm, dependency pinning |
+| 17 | MCP & AI Agent Security | Tool poisoning, indirect prompt injection, 8+ patched CVEs |
+| 18 | Supply Chain | Slopsquatted packages, malicious npm, unpinned dependencies |
 
 ---
 
-## Reference Files
+## Need a professional review?
 
-| File | Category |
-|------|----------|
-| `references/secrets-and-env.md` | API keys, MCP config secrets, .gitignore |
-| `references/database-security.md` | Supabase RLS, Firebase, Convex |
-| `references/authentication.md` | MFA, RBAC, IDOR, JWT, OAuth, Next.js middleware |
-| `references/multitenancy.md` | Cross-tenant isolation, scoped queries, background jobs |
-| `references/rate-limiting.md` | Rate limiting, CAPTCHA, wiring gap |
-| `references/payments.md` | Stripe, webhooks, server-side price lookup |
-| `references/mobile.md` | React Native / Expo |
-| `references/ai-integration.md` | LLM keys, prompt injection, output sanitization |
-| `references/deployment.md` | Headers, CORS, GraphQL, Next.js CVEs, IaC |
-| `references/ssrf.md` | SSRF patterns, private IP blocking, webhook verification |
-| `references/file-uploads.md` | Path traversal, SVG XSS, MIME spoofing, size limits |
-| `references/xss-injection.md` | DOMPurify, javascript: URIs, postMessage, CSP |
-| `references/cryptography.md` | bcrypt, AES-GCM, nonce uniqueness, timing-safe comparison |
-| `references/data-access.md` | SQLi, Prisma operator injection, ReDoS, race conditions |
-| `references/error-handling-logging.md` | Stack traces, structured logging, Sentry |
-| `references/data-privacy.md` | PII, right to deletion, GDPR, Australian Privacy Act |
-| `references/mcp-and-agents.md` | Tool poisoning, agent security, CVE reference list |
-| `references/supply-chain.md` | Slopsquatting, malicious packages, pinning |
+This skill catches common, predictable vulnerabilities. It does not replace a hands-on security assessment.
+
+If you're handling customer data, taking payments, or building for an enterprise client, consider a professional review:
+
+- **[Cyber Security Audit](https://ironsights.com.au/cyber-security-audit)** — a structured assessment of your application and infrastructure
+- **[Managed Security](https://ironsights.com.au/managed-security)** — ongoing monitoring and incident response for your business
+- **[Contact IronSights](https://ironsights.com.au/contact)** — talk to our team about your specific situation
 
 ---
 
-Maintained by [IronSights](https://ironsights.com.au) · Australian cybersecurity specialists · [Security Services](https://ironsights.com.au/managed-security)
+## Contributing
+
+Found a new vulnerability pattern? Open a pull request. We update this skill as new research and CVEs emerge.
+
+---
+
+> **Disclaimer:** This skill is a starting point for security review, not a substitute for a professional penetration test or security audit. CVE references and statistics reflect publicly available research at time of writing. IronSights Pty Ltd makes no warranty as to the completeness of findings.
