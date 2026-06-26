@@ -6,6 +6,49 @@
 - **Disable source maps** in production. Source maps expose your entire source code to anyone who opens DevTools. In Next.js: `productionBrowserSourceMaps: false` (the default) — confirm it hasn't been enabled.
 - **Verify `.git` directory is not accessible** in production. If `https://yoursite.com/.git/HEAD` returns content, your entire source code and commit history (including any secrets ever committed) are exposed.
 
+## Next.js-Specific CVEs
+
+These are patched but the vulnerable code patterns persist in AI-generated codebases long after the fix is released.
+
+**CVE-2025-29927 — Middleware Auth Bypass (CVSS 9.1):** Next.js middleware could be completely bypassed by adding `x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware` to any request. Fixed in Next.js 15.2.3+ / 14.2.25+.
+
+The correct response is not just upgrading Next.js — it's ensuring every Route Handler and Server Action independently validates auth, regardless of middleware. Middleware is a convenience layer, not a security boundary.
+
+**CVE-2025-55182 — React Server Components RCE (CVSS 10.0):** Maliciously crafted POST to any RSC endpoint enables arbitrary code execution. Real-world exploitation (cryptocurrency miners) began December 5, 2025. Fixed in React 19.0.1 / 19.1.2 / 19.2.1. Verify your React version: `npm list react`.
+
+**CVE-2024-46982 / CVE-2025-49826 — Cache Poisoning:** The `x-invoke-status` and `x-middleware-prefetch` headers are user-controllable and can poison CDN caches with empty/error responses, causing DoS. Fixed in Next.js 14.2.25+.
+
+**Server Component cache shared across users:** `fetch()` inside Server Components is cached by default and shared across all requests. User-specific data becomes global cache — user A sees user B's data.
+
+```typescript
+// BAD: fetch() in a Server Component caches the response globally
+async function UserDashboard() {
+  const data = await fetch('/api/user-data'); // cached! all users see the same data
+}
+
+// GOOD: opt out of caching for user-specific data
+const data = await fetch('/api/user-data', { cache: 'no-store' });
+// or with Next.js revalidation:
+const data = await fetch('/api/user-data', { next: { revalidate: 0 } });
+```
+
+**Vercel environment scope misconfiguration:** Variables set for "All Environments" in Vercel are available in preview deployments, which are publicly accessible URLs. Scope production secrets (database URLs, Stripe secret keys, API keys) to "Production" only. Preview environments should use test/staging credentials.
+
+**Serverless global state leakage:** Serverless functions reuse execution contexts across requests. Mutable global variables persist between requests in the same container:
+
+```typescript
+// BAD: global state persists between requests in reused containers
+let currentUser: User | null = null;
+export async function GET() {
+  currentUser = await getSession(); // leaks to next request in this container
+}
+
+// GOOD: all state local to the handler
+export async function GET(req: Request) {
+  const user = await getSession(req); // scoped to this invocation
+}
+```
+
 ## Environment Separation
 
 Use separate environment variables for each environment in Vercel (or equivalent):

@@ -1,5 +1,32 @@
 # Rate Limiting & Abuse Prevention
 
+## The Wiring Gap
+
+Research consistently finds that rate limiting middleware is *defined* in AI-generated codebases but never *mounted* on the routes that need it. The middleware exists; it's just not connected.
+
+After implementing rate limiting, verify it is actually applied:
+
+```typescript
+// BAD: defined but not used
+const ratelimit = new Ratelimit({ redis: Redis.fromEnv(), limiter: Ratelimit.slidingWindow(10, '1m') });
+
+export async function POST(req: Request) {
+  // ratelimit is never called here — the import does nothing
+  return handleLogin(req);
+}
+
+// GOOD: called at the top of every protected handler
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = await ratelimit.limit(ip);
+  if (!success) return new Response('Too many requests', { status: 429 });
+
+  return handleLogin(req);
+}
+```
+
+**Test that rate limiting actually fires:** Make 11 rapid requests to an auth endpoint — the 11th should return 429. If it doesn't, the middleware isn't wired.
+
 ## Where Rate Limiting Is Required
 
 Every one of these endpoints needs rate limiting. AI assistants almost never add it:

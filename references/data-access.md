@@ -12,6 +12,31 @@ const result = await db.query(`SELECT * FROM users WHERE id = '${userId}'`);
 const result = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ```
 
+## Prisma Operator Injection (Auth Bypass)
+
+Distinct from general ORM misuse — this specific pattern enables authentication bypass. If an unvalidated request body is passed directly to Prisma's `findFirst`, an attacker can inject MongoDB-style operators as JSON values.
+
+```typescript
+// BAD: req.body = { email: "admin@co.com", password: { "not": "" } }
+// Prisma runs: WHERE email = ? AND password != ''
+// Finds the user and returns them regardless of actual password
+const user = await prisma.user.findFirst({ where: req.body });
+
+// GOOD: use Zod to validate scalar types before Prisma; use findUnique for auth
+const { email, password } = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+}).parse(req.body);
+
+// findUnique rejects operator objects at the TypeScript level
+const user = await prisma.user.findUnique({ where: { email } });
+if (!user || !await bcrypt.compare(password, user.passwordHash)) {
+  return new Response('Invalid credentials', { status: 401 });
+}
+```
+
+The deeper fix: never use `findFirst` for authentication. Use `findUnique` on a uniquely constrained field (email, username), then validate the password separately.
+
 ## ORM Safety (Prisma)
 
 Even with an ORM, injection is possible:
