@@ -6,7 +6,7 @@ If you find a security issue in this repository itself (not in code you audited 
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Email: security@ironsights.com.au
+Report it through our confidential disclosure form: https://ironsights.com.au/security-disclosure
 
 Include:
 - A description of the vulnerability
