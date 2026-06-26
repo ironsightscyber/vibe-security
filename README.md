@@ -31,11 +31,25 @@ You need **[Claude Code](https://claude.ai/code)** installed. That's it.
 
 **Step 1 — Download**
 
-[**Download ZIP**](https://github.com/ironsightscyber/vibe-security/archive/refs/heads/main.zip) and unzip it. You'll get a folder called `vibe-security-main`.
+Choose either method:
 
-**Step 2 — Move the folder**
+**Download ZIP** (no tools required) — [**Download ZIP**](https://github.com/ironsightscyber/vibe-security/archive/refs/heads/main.zip), unzip it, rename the folder to `ironsights-vibe-check`, and move it to the path in Step 2.
 
-Rename the folder to `ironsights-vibe-check` and move it to:
+**Clone from GitHub** (if you have Git installed):
+
+```bash
+# Mac / Linux
+git clone https://github.com/ironsightscyber/vibe-security.git \
+  ~/.claude/skills/ironsights-vibe-check
+
+# Windows (PowerShell)
+git clone https://github.com/ironsightscyber/vibe-security.git `
+  "$env:USERPROFILE\.claude\skills\ironsights-vibe-check"
+```
+
+**Step 2 — Where to put the folder**
+
+If using the ZIP method, move the renamed folder to:
 
 - **Mac / Linux:** `~/.claude/skills/ironsights-vibe-check`
 - **Windows:** `C:\Users\YourName\.claude\skills\ironsights-vibe-check`
