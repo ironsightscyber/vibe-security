@@ -21,32 +21,76 @@ Real breaches: Moltbook (Jan 2026, 1.5M tokens exposed via a single `curl`), CVE
 
 ---
 
-## Installation
+## How to use it
+
+### Option A — Claude Code (recommended)
+
+The full experience. Claude reads your actual code and reports file-specific findings with code fixes.
 
 You need **[Claude Code](https://claude.ai/code)** installed. That's it.
 
-### Step 1 — Download
+**Step 1 — Download**
 
 [**Download ZIP**](https://github.com/ironsightscyber/vibe-security/archive/refs/heads/main.zip) and unzip it. You'll get a folder called `vibe-security-main`.
 
-### Step 2 — Move the folder
+**Step 2 — Move the folder**
 
 Rename the folder to `ironsights-vibe-check` and move it to:
 
 - **Mac / Linux:** `~/.claude/skills/ironsights-vibe-check`
 - **Windows:** `C:\Users\YourName\.claude\skills\ironsights-vibe-check`
 
-> **Tip:** The `.claude` folder is hidden by default. On Mac, press `Cmd + Shift + .` in Finder to reveal hidden folders. On Windows, enable "Show hidden items" in File Explorer.
+> **Tip:** The `.claude` folder is hidden by default. On Mac, press `Cmd + Shift + .` in Finder to show hidden folders. On Windows, enable "Show hidden items" in File Explorer.
 
-### Step 3 — Use it
+**Step 3 — Run it**
 
-Open any project in Claude Code and type:
+Open your project in Claude Code and type:
 
 ```
 /ironsights-vibe-check
 ```
 
-Claude will run through 18 security categories and report findings by severity — Critical, High, Medium, Low — with code fixes for each.
+---
+
+### Option B — Fork it
+
+Want to customise the audit for your team or add your own checks? Fork the repo on GitHub and install from your fork instead.
+
+1. Click **Fork** at the top of this page
+2. Clone your fork into the skills folder:
+
+```bash
+# Mac / Linux
+git clone https://github.com/YOUR-USERNAME/vibe-security.git \
+  ~/.claude/skills/ironsights-vibe-check
+
+# Windows (PowerShell)
+git clone https://github.com/YOUR-USERNAME/vibe-security.git `
+  "$env:USERPROFILE\.claude\skills\ironsights-vibe-check"
+```
+
+---
+
+### Option C — Cursor
+
+Drop the included Cursor rule into your project and trigger it from Cursor Chat.
+
+1. Copy `.cursor/rules/vibe-security.mdc` from this repo into your project's `.cursor/rules/` folder
+2. In Cursor Chat, type:
+
+```
+Run the vibe-security audit on this codebase
+```
+
+---
+
+### Option D — ChatGPT, Copilot, Gemini, Codex, or any AI tool
+
+No install needed. Open [`PROMPT.md`](PROMPT.md) in this repo, copy everything after the divider line, and paste it into any AI tool with your code open.
+
+Works with: ChatGPT, GitHub Copilot Chat, Google Gemini, Amazon Q, OpenAI Codex, Windsurf, and any other AI assistant.
+
+---
 
 ---
 

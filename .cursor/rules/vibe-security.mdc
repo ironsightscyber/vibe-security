@@ -1,0 +1,54 @@
+---
+description: IronSights Vibe Security — AI code security audit. Run when asked to audit, review security, or check for vulnerabilities.
+alwaysApply: false
+---
+
+Audit this codebase for security vulnerabilities that AI coding tools consistently introduce. Work through all 18 categories below. Skip any category where the technology is not in use.
+
+**Three principles to apply throughout:**
+- Never trust the client — every price, user ID, role, and permission must be enforced server-side
+- AI checks authentication ("is the user logged in?") but skips authorization ("does this user own this resource?") — IDOR is the #1 vulnerability in AI-generated code
+- Middleware defined ≠ middleware wired — verify every protection is actually mounted on the routes that need it
+
+---
+
+**Start here — Repository Exposure Check**
+
+Determine if the repo is public or private. If public, any secret found in the current code or git history is already compromised and must be rotated immediately before anything else is fixed.
+
+Report the repository visibility at the top of all findings.
+
+---
+
+**18 Audit Categories** — tag each finding [QUICK] (single file fix), [MEDIUM] (multi-file), or [ARCH] (design decision required)
+
+1. **Secrets & Environment Variables** — hardcoded keys, secrets in NEXT_PUBLIC_/VITE_ env vars, .env in git, MCP config files committed
+2. **Database Access Control** — Supabase RLS disabled, Firebase rules open, service_role key client-side
+3. **Authentication & Authorization** — IDOR/BOLA (missing ownership checks), JWT algorithm confusion, MFA not enforced, CVE-2025-29927 middleware bypass
+4. **Multitenancy & Tenant Isolation** — queries without org scoping, cross-tenant background jobs
+5. **Rate Limiting & Abuse Prevention** — unprotected auth endpoints, AI API abuse, CAPTCHA not verified server-side
+6. **Payment Security** — price from client body, unsigned webhooks, client-side subscription checks
+7. **Mobile Security** — API keys in bundle, tokens in AsyncStorage, unvalidated deep links
+8. **AI / LLM Integration** — AI keys with public prefix, no token limits, prompt injection, AI output rendered as HTML
+9. **Deployment & Infrastructure** — missing security headers, wildcard CORS, GraphQL introspection in prod, Next.js CVEs (≥15.3.3 required)
+10. **SSRF** — fetch(userUrl) server-side, webhook/avatar/PDF from user-supplied URLs, Next.js image optimizer open
+11. **File Upload Security** — path traversal via filename, MIME spoofing, SVG XSS, no size limit
+12. **XSS, Injection & DOM Attacks** — dangerouslySetInnerHTML without DOMPurify, javascript: URIs, postMessage origin bypass
+13. **Cryptographic Failures** — SHA-256 for passwords (use bcrypt ≥12), AES-CBC (use AES-GCM), Math.random() for tokens
+14. **Data Access & Input Validation** — SQL injection, Prisma operator injection (req.body as where clause), ReDoS, race conditions
+15. **Error Handling & Logging** — stack traces in API responses, secrets/PII in logs
+16. **Data Privacy & Compliance** — no deletion mechanism, unencrypted PII, GDPR/CCPA/Australian Privacy Principles
+17. **MCP & AI Agent Security** — tool poisoning CVE-2025-54136, indirect prompt injection, agent SSRF; verify Claude Code ≥1.0.111
+18. **Supply Chain** — slopsquatted packages, unverified AI-suggested npm packages, unpinned dependencies, Unicode in rules files
+
+---
+
+**Output format:**
+
+Start with repository visibility and any Critical findings first.
+List findings by severity: Critical → High → Medium → Low.
+For each finding: file + line, vulnerability name, what an attacker does, [tag], before/after code fix.
+End with a summary table.
+
+---
+*Audit by [IronSights](https://ironsights.com.au/vibe-security) — Australian cybersecurity specialists*
