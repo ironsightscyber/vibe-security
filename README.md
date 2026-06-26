@@ -23,31 +23,22 @@ Real breaches: Moltbook (Jan 2026, 1.5M tokens exposed via a single `curl`), CVE
 
 ## Installation
 
-### Prerequisites
+You need **[Claude Code](https://claude.ai/code)** installed. That's it.
 
-Before installing, you need:
-- **Claude Code** — Anthropic's AI coding assistant ([claude.ai/code](https://claude.ai/code))
-- **Git** — version control tool ([git-scm.com](https://git-scm.com/downloads))
+### Step 1 — Download
 
-### Install (Mac / Linux)
+[**Download ZIP**](https://github.com/ironsightscyber/vibe-security/archive/refs/heads/main.zip) and unzip it. You'll get a folder called `vibe-security-main`.
 
-Open a terminal and run:
+### Step 2 — Move the folder
 
-```bash
-git clone https://github.com/ironsightscyber/vibe-security.git \
-  ~/.claude/skills/ironsights-vibe-check
-```
+Rename the folder to `ironsights-vibe-check` and move it to:
 
-### Install (Windows)
+- **Mac / Linux:** `~/.claude/skills/ironsights-vibe-check`
+- **Windows:** `C:\Users\YourName\.claude\skills\ironsights-vibe-check`
 
-Open Command Prompt or PowerShell and run:
+> **Tip:** The `.claude` folder is hidden by default. On Mac, press `Cmd + Shift + .` in Finder to reveal hidden folders. On Windows, enable "Show hidden items" in File Explorer.
 
-```powershell
-git clone https://github.com/ironsightscyber/vibe-security.git `
-  "$env:USERPROFILE\.claude\skills\ironsights-vibe-check"
-```
-
-### Use it
+### Step 3 — Use it
 
 Open any project in Claude Code and type:
 
